@@ -6,6 +6,7 @@ class ShoppingListTest {
 
     @org.junit.jupiter.api.Test
     void addProduct() {
+        assert("meow","neow");
     }
 
     @org.junit.jupiter.api.Test
