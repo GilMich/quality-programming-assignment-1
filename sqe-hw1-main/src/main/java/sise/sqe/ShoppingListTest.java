@@ -81,10 +81,25 @@ class ShoppingListTest {
         assertEquals(exception.getMessage(), "Price cannot be negative");
     }
     @org.junit.jupiter.api.Test
-    void getDiscount_TestIfPriceAbove1000Returns0() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {sL_object.getDiscount(-5);});
-        assertEquals(exception.getMessage(), "Price cannot be negative"); // meow meow
+    void getDiscount_TestIfPriceAbove1000Returns085() {
+       assertEquals(sL_object.getDiscount(1005), 0.85);
     }
+    @org.junit.jupiter.api.Test
+    void getDiscount_TestIfPriceBetween750and1000Returns09() {
+        assertEquals(sL_object.getDiscount(800), 0.9);
+    }
+    @org.junit.jupiter.api.Test
+    void getDiscount_TestIfPriceBetween500and750Returns095() {
+        assertEquals(sL_object.getDiscount(600), 0.95);
+    }
+
+    @org.junit.jupiter.api.Test
+    void getDiscount_TestIfPriceSmallerThan500Returns1() {
+        assertEquals(sL_object.getDiscount(400), 1);
+        assertEquals(sL_object.getDiscount(0), 1);
+    }
+
+
 
     @org.junit.jupiter.api.Test
     void priceWithDelivery() {
