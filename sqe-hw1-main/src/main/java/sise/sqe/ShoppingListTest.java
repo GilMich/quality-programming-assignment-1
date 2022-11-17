@@ -1,30 +1,29 @@
 package sise.sqe;
 
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.mockito.Mockito;
 
 import java.lang.reflect.Field;
 import java.util.List;
 
-class ShoppingListTest {
-    ShoppingList sL_object ;
-    private ShoppingList sL_object1;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
-    @BeforeAll // this shit doesnt work
-    static void init_shopping_list()
+class ShoppingListTest {
+    static Supermarket supermarket;
+    static ShoppingList sL_object;
+
+    @BeforeAll
+    public static void init_shopping_list()
     {
-        Supermarket supermarket = Mockito.mock(Supermarket.class);
-        ShoppingList sL_object = new ShoppingList(supermarket) ;
+        supermarket = Mockito.mock(Supermarket.class);
+        sL_object = new ShoppingList(supermarket) ;
     }
 
     @org.junit.jupiter.api.Test
     void addProduct_check_if_list_contains_item_success() throws NoSuchFieldException, IllegalAccessException {
-        Supermarket supermarket = Mockito.mock(Supermarket.class);
-        ShoppingList sL_object = new ShoppingList(supermarket) ;
         Product p1 = new Product("1","bamba",1);
         sL_object.addProduct(p1);
         Field field = sL_object.getClass().getDeclaredField("products");
@@ -33,17 +32,58 @@ class ShoppingListTest {
         assertEquals(products.size(),1);
     }
 
-    @Test
-    public void addProductSuccessTest() {
+//    }
+//    public double getMarketPrice() {
+//        double price = 0.0;
+//
+//        // Calculates the sum of all prices
+//        for (Product product : products) {
+//            price += supermarket.getPrice(product.productId) * product.getQuantity();
+//        }
+//        // Calculates the price after discount
+////        return price * getDiscount(price);
+//    }
+    @org.junit.jupiter.api.Test
+    void getMarketPriceTestIfSumIsCorrectSuccess() {
+        Product p1 = new Product("1","bamba",2);
+        Product p2 = new Product("1","bisli",2);
+        when(supermarket.getPrice(anyString())).thenReturn(2.0);
+        sL_object.addProduct(p1);
+        sL_object.addProduct(p2);
+        assertEquals(8, sL_object.getMarketPrice());
 
     }
+//    public double getDiscount(double price) {
+//        // Negative price
+//        if(price < 0)
+//            throw new IllegalArgumentException("Price cannot be negative");
+//
+//        // 1000 < price
+//        if (price > 1000)
+//            return 0.85;
+//
+//            // 750 < price <= 1000
+//        else if (price > 750)
+//            return 0.9;
+//
+//            // 500 < price <= 750
+//        else if (price > 500)
+//            return 0.95;
+//
+//            // price < 500 -> no discount!
+//        else
+//            return 1;
+//    }
 
     @org.junit.jupiter.api.Test
-    void getMarketPrice() {
+    void getDiscount_TestIfNegativePriceThrowsException() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {sL_object.getDiscount(-5);});
+        assertEquals(exception.getMessage(), "Price cannot be negative");
     }
-
     @org.junit.jupiter.api.Test
-    void getDiscount() {
+    void getDiscount_TestIfPriceAbove1000Returns0() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {sL_object.getDiscount(-5);});
+        assertEquals(exception.getMessage(), "Price cannot be negative"); // meow meow
     }
 
     @org.junit.jupiter.api.Test
