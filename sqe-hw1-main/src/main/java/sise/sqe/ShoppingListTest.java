@@ -1,6 +1,7 @@
 package sise.sqe;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.lang.reflect.Field;
@@ -98,14 +99,27 @@ class ShoppingListTest {
         assertEquals(sL_object.getDiscount(400), 1);
         assertEquals(sL_object.getDiscount(0), 1);
     }
+    @Test
+    public void priceWithDeliveryTest(int miles) throws IllegalArgumentException {
 
 
 
-    @org.junit.jupiter.api.Test
-    void priceWithDelivery() {
+        // Negative miles
+//        if (miles < 0)
+//            throw new IllegalArgumentException("Miles cannot be negative");
+//
+//        // calculates delivery fee
+//        int numOfProducts = products.size();
+//        double deliveryFee = supermarket.calcDeliveryFee(miles, numOfProducts);
+//        // calculates price
+//        double price = getMarketPrice();
+//        // total price = deliveryFee + price
+//        return price + deliveryFee;
     }
+
 
     @org.junit.jupiter.api.Test
     void changeQuantity() {
+        /**  need to implement here! I think a spy would be good here! */
     }
 }
