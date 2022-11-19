@@ -2,6 +2,8 @@ package sise.sqe;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
 import java.lang.reflect.Field;
@@ -81,23 +83,25 @@ class ShoppingListTest {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {sL_object.getDiscount(-5);});
         assertEquals(exception.getMessage(), "Price cannot be negative");
     }
-    @org.junit.jupiter.api.Test
-    void getDiscount_TestIfPriceAbove1000Returns085() {
-       assertEquals(sL_object.getDiscount(1005), 0.85);
+    @ParameterizedTest
+    @ValueSource(ints = {1001, 2000, 3000, 4000, 5000})
+    void getDiscount_TestIfPriceAbove1000Returns085(int number) {
+       assertEquals(sL_object.getDiscount(number), 0.85); }
+    @ParameterizedTest
+    @ValueSource(ints = {751,850,950,1000})
+    void getDiscount_TestIfPriceBetween750and1000Returns09(int number) {
+        assertEquals(sL_object.getDiscount(number), 0.9);
     }
-    @org.junit.jupiter.api.Test
-    void getDiscount_TestIfPriceBetween750and1000Returns09() {
-        assertEquals(sL_object.getDiscount(800), 0.9);
-    }
-    @org.junit.jupiter.api.Test
-    void getDiscount_TestIfPriceBetween500and750Returns095() {
-        assertEquals(sL_object.getDiscount(600), 0.95);
+    @ParameterizedTest
+    @ValueSource(ints = {501,600,700,750})
+    void getDiscount_TestIfPriceBetween500and750Returns095(int number) {
+        assertEquals(sL_object.getDiscount(number), 0.95);
     }
 
-    @org.junit.jupiter.api.Test
-    void getDiscount_TestIfPriceSmallerThan500Returns1() {
-        assertEquals(sL_object.getDiscount(400), 1);
-        assertEquals(sL_object.getDiscount(0), 1);
+    @ParameterizedTest
+    @ValueSource(ints = {500,400,300,100,0})
+    void getDiscount_TestIfPriceSmallerThan500Returns1(int number) {
+        assertEquals(sL_object.getDiscount(number), 1);
     }
     @Test
     public void priceWithDeliveryTest(int miles) throws IllegalArgumentException {
