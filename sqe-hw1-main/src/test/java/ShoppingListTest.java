@@ -1,25 +1,28 @@
-package sise.sqe;
-
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
+import sise.sqe.Product;
+import sise.sqe.ShoppingList;
+import sise.sqe.Supermarket;
 
 import java.lang.reflect.Field;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+
 
 class ShoppingListTest {
     static Supermarket supermarket;
     static ShoppingList sL_object;
 
-    @BeforeAll
-    public static void init_shopping_list()
+    @BeforeEach
+    public void init_shopping_list()
     {
         supermarket = Mockito.mock(Supermarket.class);
         sL_object = new ShoppingList(supermarket) ;
@@ -33,6 +36,7 @@ class ShoppingListTest {
         field.setAccessible(true);
         List products = (List)field.get(sL_object);
         assertEquals(products.size(),1);
+        //products.remove(p1);
     }
 
 //    }
@@ -54,6 +58,8 @@ class ShoppingListTest {
         sL_object.addProduct(p1);
         sL_object.addProduct(p2);
         assertEquals(8, sL_object.getMarketPrice());
+
+
 
     }
 //    public double getDiscount(double price) {
@@ -103,27 +109,101 @@ class ShoppingListTest {
     void getDiscount_TestIfPriceSmallerThan500Returns1(int number) {
         assertEquals(sL_object.getDiscount(number), 1);
     }
+
+
+
     @Test
-    public void priceWithDeliveryTest(int miles) throws IllegalArgumentException {
-
-
-
-        // Negative miles
-//        if (miles < 0)
-//            throw new IllegalArgumentException("Miles cannot be negative");
-//
-//        // calculates delivery fee
-//        int numOfProducts = products.size();
-//        double deliveryFee = supermarket.calcDeliveryFee(miles, numOfProducts);
-//        // calculates price
-//        double price = getMarketPrice();
-//        // total price = deliveryFee + price
-//        return price + deliveryFee;
+    public void priceWithDelivery_TestIfNegativeMilesThrowsException() throws IllegalArgumentException {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {sL_object.priceWithDelivery(-20);});
+        assertEquals(exception.getMessage(), "Miles cannot be negative");
     }
 
+
+@Test
+    public void priceWithDelivery_TestWithZeroProductsReturnZero()
+    {
+        ShoppingList shoppingListSpy = Mockito.spy(new ShoppingList(supermarket));
+    assertEquals(shoppingListSpy.priceWithDelivery(0),0);
+    }
+
+    @Test
+    public void priceWithDelivery_TestCorrectPriceSuccess() throws NoSuchFieldException {
+        ShoppingList shoppingListSpy = Mockito.spy(new ShoppingList(supermarket));
+        Product p1 = new Product("1","bamba",1);
+        Product p2 = new Product("1","bisli",1);
+        shoppingListSpy.addProduct(p1);
+        shoppingListSpy.addProduct(p2);
+        Mockito.verify(shoppingListSpy).addProduct(p1);
+        Mockito.verify(shoppingListSpy).addProduct(p2);
+        when(supermarket.getPrice(anyString())).thenReturn(1.0);
+        when(shoppingListSpy.getMarketPrice()).thenReturn(2.0);
+        when(supermarket.calcDeliveryFee(anyInt(),anyInt())).thenReturn(5.0);
+        assertEquals(7, shoppingListSpy.priceWithDelivery(5));
+
+    }
 
     @org.junit.jupiter.api.Test
-    void changeQuantity() {
+    void changeQuantity_TestIfNegativeQuantityThrowsException()throws IllegalArgumentException {
         /**  need to implement here! I think a spy would be good here! */
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {sL_object.changeQuantity(-1, "milk");});
+        assertEquals(exception.getMessage(), "Quantity cannot be negative");
+
     }
+
+
+    @Test
+    void changeQuantity_TestZeroQuantitySuccess() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException {
+
+        Product p1 = new Product("1","bamba",1);
+        sL_object.addProduct(p1);
+        sL_object.changeQuantity(0,"1");
+        Field field = sL_object.getClass().getDeclaredField("products");
+        field.setAccessible(true);
+        List products = (List)field.get(sL_object);
+
+        assertEquals(false,products.contains(p1));
+        assertEquals(0,products.size());
+
+
+
+
+        //assertEquals(2, spyList.size());
+        //spyList.add(p2);
+
+
+        //Mockito.verify(spyList).add(p2);
+        //sL_object.addProduct(p1);
+
+
+
+
+
+    }
+    @Test
+    void changeQuantity_TestPositiveQuantitySuccess() throws IllegalArgumentException {
+        ShoppingList shoppingListSpy = Mockito.spy(new ShoppingList(supermarket));
+        Product p1 = new Product("1","bamba",3);
+        shoppingListSpy.addProduct(p1);
+        Mockito.verify(shoppingListSpy).addProduct(p1);
+        shoppingListSpy.changeQuantity(1,"1");
+        Mockito.verify(shoppingListSpy).changeQuantity(1,"1");
+        assertEquals(1,p1.getQuantity());
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
